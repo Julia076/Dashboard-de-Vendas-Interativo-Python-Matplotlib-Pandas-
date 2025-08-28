@@ -7,26 +7,19 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # ---------- Função para ler dados do Excel ----------
 def criar_dados_vendas(arquivo="vendas.xlsx"):
-    """
-    Lê dados de vendas a partir de um arquivo Excel.
-    Calcula a Receita automaticamente.
-    """
     if not os.path.exists(arquivo):
         messagebox.showerror("Erro", f"Arquivo não encontrado: {arquivo}")
         raise FileNotFoundError(f"Arquivo não encontrado: {arquivo}")
     
     df = pd.read_excel(arquivo)
     
-    # Verificar colunas essenciais
     col_necessarias = ['Produto', 'Categoria', 'Mes', 'Vendas', 'Preco_Unitario']
     for col in col_necessarias:
         if col not in df.columns:
             messagebox.showerror("Erro", f"Coluna '{col}' não encontrada no Excel!")
             raise ValueError(f"Coluna '{col}' não encontrada no Excel!")
     
-    # Calcular Receita
     df['Receita'] = df['Vendas'] * df['Preco_Unitario']
-    
     return df
 
 # ---------- Funções de métricas ----------
@@ -47,26 +40,21 @@ def calcular_metricas_principais(df):
 def criar_graficos(df):
     fig, axs = plt.subplots(2, 2, figsize=(12, 8))
     
-    # Gráfico 1: Vendas por produto
     vendas_produto = df.groupby('Produto')['Vendas'].sum()
     axs[0,0].bar(vendas_produto.index, vendas_produto.values, color='#4ECDC4', alpha=0.8)
     axs[0,0].set_title("Vendas por Produto")
     axs[0,0].set_ylabel("Quantidade")
     
-    # Gráfico 2: Receita por categoria
     receita_categoria = df.groupby('Categoria')['Receita'].sum()
     axs[0,1].pie(receita_categoria.values, labels=receita_categoria.index, autopct='%1.1f%%', startangle=90)
     axs[0,1].set_title("Receita por Categoria")
     
-    # Gráfico 3: Evolução mensal
     vendas_mensais = df.groupby('Mes')['Receita'].sum()
     axs[1,0].plot(vendas_mensais.index, vendas_mensais.values, marker='o', color='#FF6B6B')
     axs[1,0].set_title("Evolução Mensal da Receita")
     axs[1,0].set_ylabel("Receita (R$)")
     
-    # Gráfico 4: vazio
     axs[1,1].axis('off')
-    
     plt.tight_layout()
     return fig
 
@@ -95,8 +83,8 @@ def gerar_tabela(df, parent_frame):
 
 # ---------- Dashboard completo ----------
 def main_dashboard():
-    # Caminho do arquivo Excel
-    arquivo_excel = r"C:\Users\rodri\OneDrive\Área de Trabalho\Projetos Pessoal\vendas.xlsx"
+    pasta_atual = os.path.dirname(__file__)
+    arquivo_excel = os.path.join(pasta_atual, "vendas.xlsx")
     
     df = criar_dados_vendas(arquivo_excel)
     metricas = calcular_metricas_principais(df)
@@ -132,3 +120,4 @@ def main_dashboard():
 # ---------- Executar dashboard ----------
 if __name__ == "__main__":
     main_dashboard()
+
