@@ -89,4 +89,4 @@ arquivo_excel = os.path.join(pasta_atual, "vendas.xlsx")
 
 ## Autor
 
-**Seu Nome**
+**Júlia Rodrigues**
